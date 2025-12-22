@@ -42,7 +42,7 @@ One of the most significant learning curves in this project involved a local adm
 
 * **The Problem:** The Windows 11 client was locked into a "Standard User" profile without an option to elevate to Administrator, preventing the installation of VirtualBox Guest Additions and Domain Joining.
 * **The Action:**
-* 1. Booted into the **Windows Recovery Environment (WinRE)** via CLI.
+  1. Booted into the **Windows Recovery Environment (WinRE)** via CLI.
   2. Identified the system drive mapping via `dir` commands.
   3. Performed a **System File Swap** by replacing the Accessibility utility (`utilman.exe`) with the Command Prompt (`cmd.exe`).
   4. Escalated privileges from the login screen to force the creation of a new Local Admin account (`LabAdmin`).
