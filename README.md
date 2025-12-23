@@ -1,14 +1,14 @@
 # Home-Lab-Projects
 **Enterprise Lab: Active Directory, Windows Server 2022, and Windows 11.**
-*Security-focused system administration and troubleshooting.*
+*Security-focused system administration, automation, and troubleshooting.*
 
 ---
 
 # Windows Active Directory & Cybersecurity Home Lab
-**Project Status:** Active | **Role:** Junior Systems Administrator / Cybersecurity Technician / Help Desk
+**Project Status:** Complete | **Role:** Junior Systems Administrator / Cybersecurity Technician
 
 ## 🎯 Project Overview
-This project involves the deployment of a fully functional Windows enterprise environment within a virtualized sandbox. The objective was to simulate real-world IT support scenarios, including server configuration, user lifecycle management, and advanced system recovery. This lab demonstrates my proficiency in the CompTIA A+ and Security+ domains.
+This project involves the deployment of a fully functional Windows enterprise environment within a virtualized sandbox. The objective was to simulate real-world IT support scenarios, moving beyond basic setup into advanced administration. Key achievements include **disaster recovery (WinRE)**, **Group Policy enforcement**, **ACL security hardening**, and **PowerShell automation** for bulk user provisioning.
 
 ---
 
@@ -16,59 +16,72 @@ This project involves the deployment of a fully functional Windows enterprise en
 * **Virtualization:** Oracle VirtualBox 7.2.4
 * **Server OS:** Windows Server 2022 (Standard Desktop Experience)
 * **Client OS:** Windows 11 Pro (Enterprise Simulation)
-* **Networking:** Isolated Virtual Internal Network (`intnet`)
-* **Address Space:** `172.16.0.0/24`
+* **Networking:** Isolated Virtual Internal Network (`intnet` | `172.16.0.0/24`)
+* **Scripting:** PowerShell & Batch
 
 ---
 
-## 🏗️ Phase 1: Domain Controller Infrastructure
-* **Deployment:** Provisioned a Windows Server 2022 instance with hardware tuning (vCPU/RAM optimization) for stable performance.
-* **Active Directory (AD DS):** Configured a new forest (`HomeLab.local`) and promoted the server to Domain Controller.
-* **DNS Configuration:** Established DNS roles to manage name resolution across the private network.
-* **Networking:** Configured static IP addressing (`172.16.0.1`) and confirmed "loopback" DNS functionality.
+## 🏗️ Phase 1: Infrastructure & Networking
+* **Domain Controller:** Configured a new forest (`HomeLab.local`) and promoted a Windows Server 2022 instance to Domain Controller.
+* **DNS Services:** established internal DNS resolution to allow client-server communication without external internet reliance.
+* **Networking:** Implemented static IP addressing (`172.16.0.1`) and verified connectivity between isolated virtual machines.
 
 ---
 
 ## 👥 Phase 2: User Lifecycle & Permissions
-* **Organizational Units:** Created a hierarchical OU structure (e.g., `Marketing`, `IT`, `Finance`) to mirror corporate environments.
-* **User Provisioning:** Created department-specific users (e.g., `jdoe`) with standardized login conventions.
-* **Security Policies:** Implemented password complexity requirements and practiced account lockout/unlock procedures.
-* **Conflict Resolution:** Resolved "Grayed Out" checkbox conflicts in AD by identifying and remediating contradictions between "Password Never Expires" and "User Must Change Password" flags.
+* **Organizational Units:** Designed a hierarchical OU structure (Marketing, IT, HR) to mirror corporate environments.
+* **Security Policies:** Implemented password complexity requirements and account lockout thresholds to simulate real-world security standards.
+* **Troubleshooting:** Resolved AD conflicts between "Password Never Expires" and "User Must Change Password" settings.
 
 ---
 
 ## 🛠️ Phase 3: Advanced Troubleshooting (The "Utilman Hack")
-One of the most significant learning curves in this project involved a local administrative lockout on the Windows 11 client caused by an automated "Unattended Installation" script.
+*Demonstrating deep OS-level recovery skills.*
 
-* **The Problem:** The Windows 11 client was locked into a "Standard User" profile without an option to elevate to Administrator, preventing the installation of VirtualBox Guest Additions and Domain Joining.
-* **The Action:**
-  1. Booted into the **Windows Recovery Environment (WinRE)** via CLI.
-  2. Identified the system drive mapping via `dir` commands.
-  3. Performed a **System File Swap** by replacing the Accessibility utility (`utilman.exe`) with the Command Prompt (`cmd.exe`).
-  4. Escalated privileges from the login screen to force the creation of a new Local Admin account (`LabAdmin`).
-* **The Result:** Successfully regained administrative control, installed Guest Additions, and completed the Domain Join.
+* **The Incident:** An automated "Unattended Installation" script locked the Windows 11 client into a standard user profile with no administrative access, blocking the domain join.
+* **The Fix:**
+    1. Booted into the **Windows Recovery Environment (WinRE)**.
+    2. Performed a **System File Swap** (`utilman.exe` ↔ `cmd.exe`) via Command Line.
+    3. Escalated privileges from the login screen to create a local `LabAdmin` account.
+    4. Successfully installed Guest Additions and joined the domain.
 
 ---
 
-## 🔗 Phase 4: Network Integration (Domain Join)
-* **Client Configuration:** Tuned Windows 11 networking to use the Server IP as the primary DNS resolver.
-* **The "Handshake":** Successfully joined the Windows 11 workstation to `HomeLab.local`.
-* **Verification:** Logged in as a standard domain user (`jdoe`) and verified connectivity using the `whoami` and `ipconfig /all` commands.
+## 📜 Phase 4: Group Policy & Security Hardening
+*Demonstrating centralized management capabilities.*
+
+* **Drive Mapping GPO:** Created a Group Policy Object to automatically map a network share (`S:`) for Marketing users upon login.
+* **Corporate Branding GPO:** Enforced a standardized desktop background across client machines using UNC paths, preventing users from changing it.
+* **Least Privilege Access (ACLs):** Configured NTFS permissions on the file server. Verified that Marketing users could access `Marketing_Docs` but were blocked from `HR_Confidential` (Resulting in "Access Denied").
+
+---
+
+## ⚡ Phase 5: PowerShell Automation
+*Demonstrating "Infrastructure as Code" efficiency.*
+
+* **The Challenge:** Manually creating dozens of users is inefficient and error-prone.
+* **The Solution:** Developed a PowerShell script using `Import-Csv` and `New-ADUser` loops.
+* **The Result:** Automatically provisioned 50 user accounts from a raw text file, assigning them to the correct OUs and setting initial passwords in under 2 seconds.
 
 ---
 
 ## 📸 Lab Evidence & Screenshots
-*Documentation of the lab in action:*
+*Visual documentation of the configured environment:*
 
-1. **Server Dashboard:** ![Server Dashboard](images/Server-Manager-Dashboard.png)
-2. **Active Directory Structure:** ![AD Structure](images/AD-Users-JD.png)
-3. **Domain Join Success:** ![Domain Join](images/Win11-Domain.png)
-4. **CLI Verification:** ![CLI Verification](images/whoami.png)
+1.  **Server Dashboard:** ![Server Dashboard](images/Server-Manager-Dashboard.png)
+2.  **Active Directory Structure:** ![AD Structure](images/AD-Users-JD.png)
+3.  **Domain Join Success:** ![Domain Join](images/Win11-Domain.png)
+4.  **CLI Verification:** ![CLI Verification](images/whoami.png)
+5.  **GPO Drive Map Success:** ![Mapped Drive](images/GPO-SharedDrive.png)
+6.  **GPO Wallpaper Enforcement:** ![Corporate Wallpaper](images/GPO-Wallpaper.png)
+7.  **Security Permissions (ACLs):** ![Access Denied Error](images/ACL_Folder.png)
+8.  **Automated User Provisioning:** ![PowerShell Script](images/PowerShell-Automation.png)
 
 ---
 
 ## 🧠 Key Skills Demonstrated
-* **Active Directory Management:** OU creation, User management, Password resets.
-* **Server Administration:** DNS roles, Static IP configuration, DC Promotion.
-* **OS Hardening & Recovery:** Command Line Interface (CLI), Registry manipulation, WinRE troubleshooting.
-* **Virtualization:** Resource allocation, Internal Networking, Guest Addition optimization.
+* **Active Directory (AD DS):** User Management, OUs, Security Groups.
+* **Group Policy (GPO):** Drive Maps, Desktop Restrictions, Policy Enforcement.
+* **Network Security:** NTFS Permissions, ACLs, Least Privilege.
+* **Automation:** PowerShell Scripting, CSV Data Imports, Loops.
+* **Disaster Recovery:** WinRE, System File Manipulation, Registry Editing.
